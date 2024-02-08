@@ -1,0 +1,32 @@
+{
+  "name": "@produck/compose",
+  "version": "0.0.0",
+  "description": "Compose a list of handlers(functions) as a new handler.",
+	"files": [
+		"src",
+		"tsconfig.json"
+	],
+	"types": "./src/index.d.ts",
+	"main": "./src/index.gen.cjs",
+	"type": "module",
+	"exports": {
+		"import": "./src/index.mjs",
+		"require": "./src/index.gen.cjs"
+	},
+	"publishConfig": {
+		"access": "public"
+	},
+  "scripts": {
+		"test": "mocha \"**/*.spec.mjs\" -t 999999999",
+		"build": "rollup -c script/rollup.config.mjs",
+		"prepublishOnly": "npm run build"
+  },
+  "author": "ChaosLee",
+  "license": "MIT",
+	"devDependencies": {
+		"@types/mocha": "^10.0.6",
+		"@types/node": "^20.11.16",
+		"mocha": "^10.2.0",
+		"rollup": "^4.9.6"
+	}
+}

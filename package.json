@@ -1,0 +1,21 @@
+{
+	"name": "@produck/compose-workspace",
+	"version": "0.0.0",
+	"private": true,
+	"scripts": {
+		"deps:install": "npm -v && npm install",
+		"deps:ci-install": "npm install --include=optional",
+		"lint": "eslint --fix packages/**/*.mjs",
+		"test": "npm test --workspaces --if-present",
+		"coverage": "c8 --reporter=lcov npm run test",
+		"publish": "npm run lint && lerna publish --no-private"
+	},
+	"workspaces": [
+		"packages/compose"
+	],
+	"devDependencies": {
+		"c8": "^9.1.0",
+		"eslint": "^8.56.0",
+		"lerna": "^8.1.2"
+	}
+}
