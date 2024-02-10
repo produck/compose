@@ -1,0 +1,92 @@
+import * as assert from 'node:assert/strict';
+import { describe, it } from 'mocha';
+
+import { compose } from '../src/index.mjs';
+
+const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+describe('compose()', function () {
+	it('should build a composed handler.', function () {
+		compose();
+		compose(() => {});
+	});
+
+	it('should throw if bad handler.', function () {
+		assert.throws(() => compose(null), {
+			name: 'TypeError',
+			message: 'Invalid handlers[0], one "function" expected.',
+		});
+	});
+
+	describe('=>composedHandler()', function () {
+		it('should throw if bad next', function () {
+			assert.throws(() => compose()(null, null), {
+				name: 'TypeError',
+				message: 'Invalid "next", one "function" expected.',
+			});
+		});
+
+		it('should work for normal function with default next().', function () {
+			const flagList = [];
+
+			compose(
+				(_, next) => next(flagList.push(0)),
+				(_, next) => next(flagList.push(1)),
+			)();
+
+			assert.deepEqual(flagList, [0, 1]);
+		});
+
+		it('should work for normal function with specific next().', function () {
+			const flagList = [];
+
+			compose(
+				(_, next) => next(flagList.push(0)),
+				(_, next) => next(flagList.push(1)),
+			)(null, () => flagList.push(2));
+
+			assert.deepEqual(flagList, [0, 1, 2]);
+		});
+
+		it('should work for async function.', async function () {
+			const flagList = [];
+
+			await compose(async (_, next) => {
+				await sleep(2000);
+				await next(flagList.push(0));
+			}, async (_, next) => {
+				await sleep(1000);
+				await next(flagList.push(1));
+			},
+			)();
+
+			assert.deepEqual(flagList, [0, 1]);
+		});
+
+		it('should throw if multiple next().', function () {
+			assert.throws(() => {
+				compose((_, next) => next(next()), () => {})(null);
+			}, {
+				name: 'Error',
+				message: 'A next() called multiple times.',
+			});
+		});
+
+		it('should catch if next() throw.', async function () {
+			let flag = false;
+
+			await compose(async function intercept(_, next) {
+				try {
+					await next();
+				} catch (error) {
+					flag = true;
+					assert.equal(error.message, 'foo');
+				}
+			}, function throwError() {
+				throw new Error('foo');
+			})();
+
+			assert.equal(flag, true);
+		});
+	});
+});

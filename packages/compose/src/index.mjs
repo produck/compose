@@ -4,26 +4,30 @@ const assertArrayOfFunction = (value, index) => {
 	}
 };
 
+const NULL_NEXT = () => {};
+
 export function compose(...handlers) {
 	handlers.forEach(assertArrayOfFunction);
 
-	return function composedHandler(context, next) {
-		let last = -1;
+	return function composed(context, next = NULL_NEXT) {
+		if (typeof next !== 'function') {
+			throw new TypeError('Invalid "next", one "function" expected.');
+		}
 
-		return (function Next(index) {
-			if (index <= last) {
-				throw new Error('next() called multiple times.');
+		let current = -1;
+
+		return (function _next(index) {
+			if (index <= current) {
+				throw new Error('A next() called multiple times.');
 			}
 
-			last = index;
+			current = index;
 
-			if (index > handlers.length) {
-				return;
+			if (index === handlers.length) {
+				return next();
 			}
 
-			const handler = index === handlers.length ? next : handlers[index];
-
-			return handler(context, Next.bind(undefined, index + 1));
+			return handlers[index](context, _next.bind(null, index + 1));
 		})(0);
 	};
 }
