@@ -14,7 +14,7 @@ describe('compose()', function () {
 	it('should throw if bad handler.', function () {
 		assert.throws(() => compose(null), {
 			name: 'TypeError',
-			message: 'Invalid handlers[0], one "function" expected.',
+			message: 'Invalid "handlers[0]", one "Function" expected.',
 		});
 	});
 
@@ -22,7 +22,7 @@ describe('compose()', function () {
 		it('should throw if bad next', function () {
 			assert.throws(() => compose()(null, null), {
 				name: 'TypeError',
-				message: 'Invalid "next", one "function" expected.',
+				message: 'Invalid "next", one "Function" expected.',
 			});
 		});
 

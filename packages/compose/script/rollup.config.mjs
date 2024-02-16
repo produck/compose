@@ -2,6 +2,8 @@ import { createRequire } from 'node:module';
 import path from 'node:path';
 
 import { defineConfig } from 'rollup';
+import { nodeResolve } from '@rollup/plugin-node-resolve';
+import terser from '@rollup/plugin-terser';
 
 const require = createRequire(import.meta.url);
 const meta = require('../package.json');
@@ -22,13 +24,20 @@ const moduleList = [
 ];
 
 export default moduleList.map(config => {
+	const plugins = [
+		nodeResolve(),
+		terser(),
+	];
+
 	return defineConfig({
 		input: path.resolve('src/index.mjs'),
+		treeshake: 'smallest',
 		output: {
 			file: config.output,
 			format: config.format,
 			name: config.name,
 			banner: BANNER,
 		},
+		plugins,
 	});
 });
