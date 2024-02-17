@@ -21,7 +21,7 @@ export const compose = (...handlers) => {
 				return next();
 			}
 
-			return handlers[index](context, _next.bind(NULL, index + 1));
+			return handlers[index](context, I.Function.bind(_next, NULL, index + 1));
 		})(0);
 	};
 };
