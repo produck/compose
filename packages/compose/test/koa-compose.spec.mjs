@@ -107,7 +107,7 @@ describe('@koa-compose', function () {
 	it('should only accept middleware as functions', () => {
 		assert.throws(() => compose(null), {
 			name: 'TypeError',
-			message: 'Invalid "handlers[0]", one "Function" expected.',
+			message: 'Invalid "handlers[0]", one "function" expected.',
 		});
 	});
 

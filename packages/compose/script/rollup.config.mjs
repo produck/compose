@@ -2,7 +2,6 @@ import { createRequire } from 'node:module';
 import path from 'node:path';
 
 import { defineConfig } from 'rollup';
-import { nodeResolve } from '@rollup/plugin-node-resolve';
 import terser from '@rollup/plugin-terser';
 
 const require = createRequire(import.meta.url);
@@ -25,7 +24,6 @@ const moduleList = [
 
 export default moduleList.map(config => {
 	const plugins = [
-		nodeResolve(),
 		terser(),
 	];
 

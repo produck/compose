@@ -1,27 +1,29 @@
-import { Assert, Error, NULL, I } from '@produck/idiom-common';
-
 const assertArrayOfFunction = (value, index) => {
-	return Assert.FunctionType(value, `handlers[${index}]`);
+	if (typeof value !== 'function') {
+		throw new TypeError(`Invalid "handlers[${index}]", one "function" expected.`);
+	}
 };
 
 export const compose = (...handlers) => {
-	I.Array.forEach(handlers, assertArrayOfFunction);
+	handlers.forEach(assertArrayOfFunction);
 
 	return (context, next = () => {}, current = -1) => {
-		Assert.FunctionType(next, 'next');
+		if (typeof next !== 'function') {
+			throw new TypeError('Invalid "next", one "function" expected.');
+		}
 
 		return (function _next(index) {
 			if (index <= current) {
-				Error.Throw('A next() called multiple times.');
+				throw new Error('A next() called multiple times.');
 			}
 
 			current = index;
 
-			if (index === I.Array.length(handlers)) {
+			if (index === handlers.length) {
 				return next();
 			}
 
-			return handlers[index](context, I.Function.bind(_next, NULL, index + 1));
+			return handlers[index](context, _next.bind(undefined, index + 1));
 		})(0);
 	};
 };
