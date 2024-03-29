@@ -8,14 +8,19 @@
 		"lint": "eslint --fix packages/**/*.mjs",
 		"test": "npm test --workspaces --if-present",
 		"coverage": "c8 --reporter=lcov npm run test",
-		"publish": "npm run lint && lerna publish --no-private"
+		"publish": "npm run lint && lerna publish --no-private",
+		"docs:dev": "vitepress dev docs",
+		"docs:build": "vitepress build docs",
+		"docs:preview": "vitepress preview docs"
 	},
 	"workspaces": [
 		"packages/compose"
 	],
 	"devDependencies": {
+		"add": "^2.0.6",
 		"c8": "^9.1.0",
 		"eslint": "^8.56.0",
-		"lerna": "^8.1.2"
+		"lerna": "^8.1.2",
+		"vitepress": "^1.0.1"
 	}
 }
