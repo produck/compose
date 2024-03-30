@@ -5,7 +5,7 @@
 	"scripts": {
 		"deps:install": "npm -v && npm install",
 		"deps:ci-install": "npm install --include=optional",
-		"lint": "eslint --fix packages/**/*.mjs",
+		"lint": "eslint --fix packages/**/*.mjs docs/.vitepress/**/*.mjs",
 		"test": "npm test --workspaces --if-present",
 		"coverage": "c8 --reporter=lcov npm run test",
 		"publish": "npm run lint && lerna publish --no-private",
