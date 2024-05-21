@@ -4,8 +4,8 @@ layout: home
 
 hero:
   name: "@produck/compose"
-  text: "It may be the final middleware composer(like koa-compose)."
-  tagline: My great project tagline
+  text: Middleware composer
+  tagline: Middleware composer
   actions:
     - theme: brand
       text: Markdown Examples
@@ -22,4 +22,3 @@ features:
   - title: Feature C
     details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
 ---
-

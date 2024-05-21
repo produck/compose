@@ -4,8 +4,8 @@ layout: home
 
 hero:
   name: "@produck/compose"
-  text: ""
-  tagline: 这可能是组装器的最终形式
+  text: 中间件组装器
+  tagline: 类似于koa-compose但更准确更稳定
   actions:
     - theme: brand
       text: Markdown Examples

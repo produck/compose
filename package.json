@@ -1,6 +1,5 @@
 {
 	"name": "@produck/compose-workspace",
-	"version": "0.0.0",
 	"private": true,
 	"scripts": {
 		"deps:install": "npm -v && npm install",
@@ -17,10 +16,9 @@
 		"packages/compose"
 	],
 	"devDependencies": {
-		"add": "^2.0.6",
-		"c8": "^9.1.0",
+		"c8": "^10.1.2",
 		"eslint": "^8.57.0",
-		"lerna": "^8.1.2",
-		"vitepress": "^1.1.0"
+		"lerna": "^8.1.5",
+		"vitepress": "^1.2.3"
 	}
 }
