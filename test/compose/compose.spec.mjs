@@ -1,7 +1,7 @@
 import * as assert from 'node:assert/strict';
 import { describe, it } from 'mocha';
 
-import { compose } from '../src/index.mjs';
+import { compose } from '@produck/compose';
 
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 

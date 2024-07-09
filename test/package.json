@@ -1,0 +1,12 @@
+{
+	"private": true,
+	"scripts": {
+		"test": "mocha \"**/*.spec.mjs\" -t 999999999"
+	},
+	"license": "MIT",
+	"devDependencies": {
+		"@produck/compose": "^0.1.1",
+		"@types/mocha": "^10.0.7",
+		"mocha": "^10.6.0"
+	}
+}

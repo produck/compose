@@ -12,7 +12,7 @@ export const compose = (...handlers) => {
 			throw new TypeError('Invalid "next", one "function" expected.');
 		}
 
-		return (function _next(index) {
+		return (function linker(index) {
 			if (index <= current) {
 				throw new Error('A next() called multiple times.');
 			}
@@ -23,7 +23,7 @@ export const compose = (...handlers) => {
 				return next();
 			}
 
-			return handlers[index](context, _next.bind(undefined, index + 1));
+			return handlers[index](context, linker.bind(undefined, index + 1));
 		})(0);
 	};
 };
