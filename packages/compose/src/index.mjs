@@ -1,16 +1,26 @@
-const assertArrayOfFunction = (value, index) => {
+function assertHandlerAt(value, index) {
 	if (typeof value !== 'function') {
 		throw new TypeError(`Invalid "handlers[${index}]", one "function" expected.`);
 	}
-};
+}
 
-export const compose = (...handlers) => {
-	handlers.forEach(assertArrayOfFunction);
+function assertNext(value) {
+	if (typeof value !== 'function') {
+		throw new TypeError('Invalid "next", one "function" expected.');
+	}
+}
 
-	return (context, next = () => {}, current = -1) => {
-		if (typeof next !== 'function') {
-			throw new TypeError('Invalid "next", one "function" expected.');
-		}
+const NO_NEXT = () => {};
+
+export function compose(...handlers) {
+	handlers.forEach(assertHandlerAt);
+
+	const length = handlers.length;
+
+	return function workflow(context, next = NO_NEXT) {
+		assertNext(next);
+
+		let current = -1;
 
 		return (function linker(index) {
 			if (index <= current) {
@@ -19,11 +29,11 @@ export const compose = (...handlers) => {
 
 			current = index;
 
-			if (index === handlers.length) {
+			if (index === length) {
 				return next();
 			}
 
 			return handlers[index](context, linker.bind(undefined, index + 1));
 		})(0);
 	};
-};
+}
