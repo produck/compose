@@ -214,10 +214,19 @@ describe('@koa-compose', function () {
 
 		await compose(
 			compose(
-				(_, next) => next(called.push(1)),
-				(_, next) => next(called.push(2)),
+				(_, next) => {
+					called.push(1);
+					next();
+				},
+				(_, next) => {
+					called.push(2);
+					next();
+				},
 			),
-			(_, next) => next(called.push(3)),
+			(_, next) => {
+				called.push(3);
+				next();
+			},
 		)({});
 
 		assert.deepEqual(called, [1, 2, 3]);

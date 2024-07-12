@@ -30,8 +30,14 @@ describe('compose()', function () {
 			const flagList = [];
 
 			compose(
-				(_, next) => next(flagList.push(0)),
-				(_, next) => next(flagList.push(1)),
+				(_, next) => {
+					flagList.push(0);
+					next();
+				},
+				(_, next) => {
+					flagList.push(1);
+					next();
+				},
 			)();
 
 			assert.deepEqual(flagList, [0, 1]);
@@ -41,8 +47,14 @@ describe('compose()', function () {
 			const flagList = [];
 
 			compose(
-				(_, next) => next(flagList.push(0)),
-				(_, next) => next(flagList.push(1)),
+				(_, next) => {
+					flagList.push(0);
+					next();
+				},
+				(_, next) => {
+					flagList.push(1);
+					next();
+				},
 			)(null, () => flagList.push(2));
 
 			assert.deepEqual(flagList, [0, 1, 2]);
@@ -53,10 +65,12 @@ describe('compose()', function () {
 
 			await compose(async (_, next) => {
 				await sleep(2000);
-				await next(flagList.push(0));
+				flagList.push(0);
+				await next();
 			}, async (_, next) => {
 				await sleep(1000);
-				await next(flagList.push(1));
+				flagList.push(1);
+				await next();
 			},
 			)();
 
@@ -89,22 +103,43 @@ describe('compose()', function () {
 			assert.equal(flag, true);
 		});
 
-		it('should be forked to call handler by conditions.', function () {
-			const workflowA = compose(function () {
+		it.only('should be forked to call handler by conditions.', function () {
+			function handlerC(_, next) {
+				next();
+
+				return 'c';
+			}
+
+			const workflowA = compose(function A(_, next) {
+				const ret = next(handlerC);
+
+				assert.equal(ret, 'c');
+
 				return 'a';
 			});
 
-			const workflowB = compose(function () {
+			const workflowB = compose(function B(_, next) {
+				const ret = next(handlerC);
+
+				assert.equal(ret, 'c');
+
 				return 'b';
 			});
 
-			const workflowMain = compose(function (_, next) {
-				if (flag) {
-					return workflowA(_, next);
-				} else {
-					return workflowB(_, next);
-				}
-			});
+			const workflowMain = compose(
+				function PreMain(_, next) {
+					if (flag) {
+						return next(workflowA);
+					} else {
+						return next(workflowB);
+					}
+				},
+				function PostMain(_, next) {
+					next();
+
+					return 'end';
+				},
+			);
 
 			let flag = true;
 

@@ -22,9 +22,13 @@ export function compose(...handlers) {
 
 		let current = -1;
 
-		return (function linker(index) {
+		return (function linker(index, ...args) {
 			if (index <= current) {
 				throw new Error('A next() called multiple times.');
+			}
+
+			if (args.length === 1) {
+				return args[0](context, linker.bind(undefined, index));
 			}
 
 			current = index;
