@@ -79,7 +79,10 @@ describe('compose()', function () {
 
 		it('should throw if multiple next().', function () {
 			assert.throws(() => {
-				compose((_, next) => next(next()), () => {})(null);
+				compose((_, next) => {
+					next();
+					next();
+				}, () => {})(null);
 			}, {
 				name: 'Error',
 				message: 'A next() called multiple times.',
@@ -103,36 +106,34 @@ describe('compose()', function () {
 			assert.equal(flag, true);
 		});
 
-		it.only('should be forked to call handler by conditions.', function () {
+		it('should be forked to call handler by conditions.', function () {
+			// -PreMain
+			//  -workflowA
+			//   handlerC
+			//  -workflowB
+			//   handlerC
+			//  PostMain
 			function handlerC(_, next) {
-				next();
+				assert.equal(next(), 'end');
 
 				return 'c';
 			}
 
 			const workflowA = compose(function A(_, next) {
-				const ret = next(handlerC);
-
-				assert.equal(ret, 'c');
+				assert.equal(next(handlerC), 'c');
 
 				return 'a';
 			});
 
 			const workflowB = compose(function B(_, next) {
-				const ret = next(handlerC);
-
-				assert.equal(ret, 'c');
+				assert.equal(next(handlerC), 'c');
 
 				return 'b';
 			});
 
 			const workflowMain = compose(
 				function PreMain(_, next) {
-					if (flag) {
-						return next(workflowA);
-					} else {
-						return next(workflowB);
-					}
+					return next(flag ? workflowA : workflowB);
 				},
 				function PostMain(_, next) {
 					next();

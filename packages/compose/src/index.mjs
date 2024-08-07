@@ -20,24 +20,38 @@ export function compose(...handlers) {
 	return function workflow(context, next = NO_NEXT) {
 		assertNext(next);
 
-		let current = -1;
-
-		return (function linker(index, ...args) {
-			if (index <= current) {
-				throw new Error('A next() called multiple times.');
-			}
-
-			if (args.length === 1) {
-				return args[0](context, linker.bind(undefined, index));
-			}
-
-			current = index;
-
+		return (function linker(index) {
 			if (index === length) {
 				return next();
 			}
 
-			return handlers[index](context, linker.bind(undefined, index + 1));
+			let jumped = false;
+
+			return handlers[index](context, function jump(...args) {
+				if (jumped) {
+					throw new Error('A next() called multiple times.');
+				}
+
+				const [handler] = args;
+
+				if (typeof handler === 'function') {
+					return handler(context, jump);
+				}
+
+				jumped = true;
+
+				if (args.length === 0) {
+					return linker(index + 1);
+				}
+
+				const [offset] = args;
+
+				if (Number.isInteger(offset)) {
+					return linker(index + offset);
+				}
+
+				throw new Error('Bad jumping locator.');
+			});
 		})(0);
 	};
 }
