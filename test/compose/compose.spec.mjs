@@ -19,10 +19,10 @@ describe('compose()', function () {
 	});
 
 	describe('=>composedHandler()', function () {
-		it('should throw if bad next', function () {
+		it('should throw if bad done', function () {
 			assert.throws(() => compose()(null, null), {
 				name: 'TypeError',
-				message: 'Invalid "next", one "function" expected.',
+				message: 'Invalid "done", one "function" expected.',
 			});
 		});
 

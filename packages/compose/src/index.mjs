@@ -4,36 +4,38 @@ function assertHandlerAt(value, index) {
 	}
 }
 
-function assertNext(value) {
+function assertDone(value) {
 	if (typeof value !== 'function') {
-		throw new TypeError('Invalid "next", one "function" expected.');
+		throw new TypeError('Invalid "done", one "function" expected.');
 	}
 }
 
-const NO_NEXT = () => {};
+const DEFAULT_DONE = () => {};
 
 export function compose(...handlers) {
 	handlers.forEach(assertHandlerAt);
 
-	const length = handlers.length;
+	const { length } = handlers;
 
-	return function workflow(context, next = NO_NEXT) {
-		assertNext(next);
+	return function workflow(context, done = DEFAULT_DONE) {
+		assertDone(done);
 
-		let current = -1;
-
-		return (function linker(index) {
-			if (index <= current) {
-				throw new Error('A next() called multiple times.');
-			}
-
-			current = index;
-
+		return (function link(index) {
 			if (index === length) {
-				return next();
+				return done();
 			}
 
-			return handlers[index](context, linker.bind(undefined, index + 1));
+			let called = false;
+
+			return handlers[index](context, function next() {
+				if (called) {
+					throw new Error('A next() called multiple times.');
+				}
+
+				called = true;
+
+				return link(index + 1);
+			});
 		})(0);
 	};
 }
