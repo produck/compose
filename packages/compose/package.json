@@ -23,8 +23,9 @@
 	"author": "ChaosLee",
 	"license": "MIT",
 	"devDependencies": {
+		"@produck/ow": "^0.1.0",
 		"@rollup/plugin-terser": "^0.4.4",
 		"@types/node": "^20.14.15",
-		"rollup": "^4.20.0"
+		"rollup": "^4.21.2"
 	}
 }

@@ -1,12 +1,14 @@
+import * as Ow from '@produck/ow';
+
 function assertHandlerAt(value, index) {
 	if (typeof value !== 'function') {
-		throw new TypeError(`Invalid "handlers[${index}]", one "function" expected.`);
+		Ow.Invalid(`handlers[${index}]`, 'function');
 	}
 }
 
 function assertDone(value) {
 	if (typeof value !== 'function') {
-		throw new TypeError('Invalid "done", one "function" expected.');
+		Ow.Invalid('done', 'function');
 	}
 }
 
