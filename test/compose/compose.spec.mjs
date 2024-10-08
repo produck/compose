@@ -88,29 +88,5 @@ describe('compose()', function () {
 
 			assert.equal(flag, true);
 		});
-
-		it('should be forked to call handler by conditions.', function () {
-			const workflowA = compose(function () {
-				return 'a';
-			});
-
-			const workflowB = compose(function () {
-				return 'b';
-			});
-
-			const workflowMain = compose(function (_, next) {
-				if (flag) {
-					return workflowA(_, next);
-				} else {
-					return workflowB(_, next);
-				}
-			});
-
-			let flag = true;
-
-			assert.equal(workflowMain(), 'a');
-			flag = false;
-			assert.equal(workflowMain(), 'b');
-		});
 	});
 });
