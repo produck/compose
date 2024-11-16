@@ -10,6 +10,7 @@
 	"main": "./src/index.gen.cjs",
 	"type": "module",
 	"exports": {
+		"types": "./src/index.d.ts",
 		"import": "./src/index.mjs",
 		"require": "./src/index.gen.cjs"
 	},
@@ -17,14 +18,13 @@
 		"access": "public"
 	},
 	"scripts": {
+		"test": "mocha \"**/*.spec.mjs\" -t 999999999",
 		"build": "rollup -c script/rollup.config.mjs",
 		"prepublishOnly": "npm run build"
 	},
 	"author": "ChaosLee",
 	"license": "MIT",
-	"devDependencies": {
-		"@produck/ow": "^0.1.1",
-		"@rollup/plugin-terser": "^0.4.4",
-		"rollup": "^4.25.0"
+	"dependencies": {
+		"@produck/ow": "^0.1.2"
 	}
 }

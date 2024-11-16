@@ -1,7 +1,7 @@
 import * as assert from 'node:assert/strict';
 import { describe, it } from 'mocha';
 
-import { compose } from '@produck/compose';
+import { compose } from '../../src/index.mjs';
 
 describe('::example::branch', function () {
 	it('should be forked to call handler by conditions.', function () {
