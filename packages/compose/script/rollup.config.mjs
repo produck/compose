@@ -1,3 +1,5 @@
+import { nodeResolve } from '@rollup/plugin-node-resolve';
+
 import { createRequire } from 'node:module';
 import path from 'node:path';
 
@@ -24,6 +26,7 @@ const moduleList = [
 
 export default moduleList.map(config => {
 	const plugins = [
+		nodeResolve({ preferBuiltins: true }),
 		terser(),
 	];
 
