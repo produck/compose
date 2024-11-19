@@ -1,15 +1,8 @@
 import * as Ow from '@produck/ow';
+import { Assert } from '@produck/idiom';
 
 function assertHandlerAt(value, index) {
-	if (typeof value !== 'function') {
-		Ow.Invalid(`handlers[${index}]`, 'function');
-	}
-}
-
-function assertDone(value) {
-	if (typeof value !== 'function') {
-		Ow.Invalid('done', 'function');
-	}
+	Assert.Type.Function(value, `handlers[${index}]`);
 }
 
 const DEFAULT_DONE = () => {};
@@ -20,7 +13,7 @@ export function compose(...handlers) {
 	const { length } = handlers;
 
 	return function workflow(context, done = DEFAULT_DONE) {
-		assertDone(done);
+		Assert.Type.Function(done, 'done');
 
 		return (function link(index) {
 			if (index === length) {
@@ -31,7 +24,7 @@ export function compose(...handlers) {
 
 			return handlers[index](context, function next() {
 				if (called) {
-					throw new Error('A next() called multiple times.');
+					return Ow.Error.Common('A next() called multiple times.');
 				}
 
 				called = true;

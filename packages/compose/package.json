@@ -25,6 +25,7 @@
 	"author": "ChaosLee",
 	"license": "MIT",
 	"dependencies": {
+		"@produck/idiom": "^0.3.1",
 		"@produck/ow": "^0.1.2"
 	}
 }
