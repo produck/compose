@@ -1,5 +1,3 @@
-import { nodeResolve } from '@rollup/plugin-node-resolve';
-
 import { createRequire } from 'node:module';
 import path from 'node:path';
 
@@ -26,13 +24,15 @@ const moduleList = [
 
 export default moduleList.map(config => {
 	const plugins = [
-		nodeResolve({ preferBuiltins: true }),
 		terser(),
 	];
 
 	return defineConfig({
 		input: path.resolve('src/index.mjs'),
 		treeshake: 'smallest',
+		external: [
+			...Object.keys(meta.dependencies),
+		],
 		output: {
 			file: config.output,
 			format: config.format,
