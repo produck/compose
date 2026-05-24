@@ -3,8 +3,7 @@
   "version": "0.1.13",
   "description": "Compose a list of handlers(functions) as a new handler.",
   "files": [
-    "src",
-    "tsconfig.json"
+    "src"
   ],
   "types": "./src/index.d.ts",
   "main": "./src/index.mjs",

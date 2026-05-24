@@ -10,9 +10,12 @@ export type Handler<T = unknown, R = unknown> = (context: T, next: Next) => R;
 
 /**
  * Composes zero or more handlers into a single middleware function.
- * When called with no arguments, returns a no-op handler.
+ * When called with no arguments, returns a pass-through handler.
  */
-export function compose(): () => undefined;
+export function compose<T = unknown, D = unknown>(): (
+  context: T,
+  done?: () => D,
+) => D | undefined;
 
 /**
  * Composes one or more handlers into a single middleware function.
@@ -33,9 +36,9 @@ export function compose<T, B extends Handler>(
  * @typeParam T - The context type shared by all handlers.
  * @typeParam B - The bottom (first) handler type.
  * @param bottom - The first handler in the chain.
- * @param handler - Additional handlers sharing the same context type.
+ * @param handlers - Additional handlers sharing the same context type.
  */
 export function compose<T, B extends Handler<T>>(
   bottom: B,
-  ...handler: Handler<T>[]
-): ReturnType<B>;
+  ...handlers: Handler<T>[]
+): Handler<T, ReturnType<B>>;
