@@ -1,12 +1,9 @@
 {
-	"compilerOptions": {
-		"lib": [
-			"ESNext"
-		],
-		"alwaysStrict": false,
-		"allowJs": true,
-		"noEmit": true,
-		"module": "NodeNext",
-		"moduleResolution": "NodeNext"
-	}
+  "compilerOptions": {
+    "lib": ["ESNext"],
+    "allowJs": true,
+    "noEmit": true,
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext"
+  }
 }

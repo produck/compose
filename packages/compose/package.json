@@ -1,31 +1,32 @@
 {
-	"name": "@produck/compose",
-	"version": "0.1.13",
-	"description": "Compose a list of handlers(functions) as a new handler.",
-	"files": [
-		"src",
-		"tsconfig.json"
-	],
-	"types": "./src/index.d.ts",
-	"main": "./src/index.gen.cjs",
-	"type": "module",
-	"exports": {
-		"types": "./src/index.d.ts",
-		"import": "./src/index.mjs",
-		"require": "./src/index.gen.cjs"
-	},
-	"publishConfig": {
-		"access": "public"
-	},
-	"scripts": {
-		"test": "mocha \"**/*.spec.mjs\" -t 999999999",
-		"build": "rollup -c script/rollup.config.mjs",
-		"prepublishOnly": "npm run build"
-	},
-	"author": "ChaosLee",
-	"license": "MIT",
-	"dependencies": {
-		"@produck/idiom": "^0.4.3",
-		"@produck/ow": "^0.1.4"
-	}
+  "name": "@produck/compose",
+  "version": "0.1.13",
+  "description": "Compose a list of handlers(functions) as a new handler.",
+  "files": [
+    "src",
+    "tsconfig.json"
+  ],
+  "types": "./src/index.d.ts",
+  "main": "./src/index.mjs",
+  "type": "module",
+  "exports": {
+    "types": "./src/index.d.ts",
+    "import": "./src/index.mjs"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "test": "node test/index.mjs",
+    "produck:coverage": "c8 --reporter=lcov --reporter=html --reporter=text-summary npm test"
+  },
+  "author": "ChaosLee",
+  "license": "MIT",
+  "dependencies": {
+    "@produck/idiom": "^0.4.3",
+    "@produck/ow": "^0.1.4"
+  },
+  "devDependencies": {
+    "c8": "11.0.0"
+  }
 }

@@ -132,10 +132,9 @@ dist
 # Vscode
 .vscode
 
-# Vitepress
-docs/.vitepress/Diagnostic
-docs/.vitepress/cache
-
 # Specific ignored / generated.
 *.ign*
 *.gen*
+
+# produck:org-baseline
+publish-assets/
