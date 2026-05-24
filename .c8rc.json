@@ -5,7 +5,8 @@
     "**/coverage/**",
     "**/dist/**",
     "**/build/**",
-    "**/out/**"
+    "**/out/**",
+    "**/test/**"
   ],
   "reporter": ["lcov", "html", "text-summary"],
   "branches": 99.5,
