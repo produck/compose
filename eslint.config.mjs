@@ -16,10 +16,4 @@ export default defineConfig([
   ProduckRule.config.json,
   ProduckRule.config.markdown,
   ProduckRule.excludeGitIgnore(import.meta.url),
-  {
-    files: ['**/*.d.ts'],
-    rules: {
-      '@typescript-eslint/no-explicit-any': 'off',
-    },
-  },
 ]);

@@ -23,10 +23,7 @@
   "author": "ChaosLee",
   "license": "MIT",
   "dependencies": {
-    "@produck/idiom": "^0.4.3",
-    "@produck/ow": "^0.1.4"
-  },
-  "devDependencies": {
-    "c8": "11.0.0"
+    "@produck/ow": "^0.2.5",
+    "@produck/type-error": "^0.1.7"
   }
 }

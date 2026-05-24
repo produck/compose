@@ -1,8 +1,10 @@
 import * as Ow from '@produck/ow';
-import { Assert } from '@produck/idiom';
+import { ThrowTypeError } from '@produck/type-error';
 
 function assertHandlerAt(value, index) {
-  Assert.Type.Function(value, `handlers[${index}]`);
+  if (typeof value !== 'function') {
+    ThrowTypeError(`handlers[${index}]`, 'function');
+  }
 }
 
 const DEFAULT_DONE = () => {};
@@ -13,7 +15,9 @@ export function compose(...handlers) {
   const { length } = handlers;
 
   return function workflow(context, done = DEFAULT_DONE) {
-    Assert.Type.Function(done, 'done');
+    if (typeof done !== 'function') {
+      ThrowTypeError('done', 'function');
+    }
 
     return (function link(index) {
       if (index === length) {

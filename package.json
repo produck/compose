@@ -2,11 +2,8 @@
   "name": "@produck/compose-workspace",
   "private": true,
   "scripts": {
-    "deps:ci-install": "npm install --include=optional",
-    "lint": "eslint --fix packages/**/*.mjs",
     "test": "npm test --workspaces --if-present",
-    "coverage": "c8 --reporter=lcov npm run test",
-    "publish": "npm run lint && npm test && lerna publish",
+    "publish": "npm run produck:lint && npm test && lerna publish",
     "produck:format": "prettier --write . --ignore-path .prettierignore --ignore-path .gitignore",
     "produck:lint": "eslint --fix . --max-warnings=0",
     "produck:install": "npm -v && npm install",
