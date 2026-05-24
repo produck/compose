@@ -2,12 +2,33 @@
   "name": "@produck/compose",
   "version": "0.1.14",
   "description": "Compose a list of handlers(functions) as a new handler.",
+  "keywords": [
+    "compose",
+    "middleware",
+    "onion",
+    "handler",
+    "pipeline"
+  ],
+  "homepage": "https://github.com/produck/compose#readme",
+  "bugs": {
+    "url": "https://github.com/produck/compose/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/produck/compose.git"
+  },
+  "license": "MIT",
+  "author": "ChaosLee",
+  "type": "module",
   "files": [
     "src"
   ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18"
+  },
   "types": "./src/index.d.ts",
   "main": "./src/index.mjs",
-  "type": "module",
   "exports": {
     "types": "./src/index.d.ts",
     "import": "./src/index.mjs"
@@ -19,8 +40,6 @@
     "test": "node test/index.mjs",
     "produck:coverage": "c8 --reporter=lcov --reporter=html --reporter=text-summary npm test"
   },
-  "author": "ChaosLee",
-  "license": "MIT",
   "dependencies": {
     "@produck/ow": "^0.2.5",
     "@produck/type-error": "^0.1.7"
