@@ -1,6 +1,6 @@
 {
   "name": "@produck/compose",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Compose a list of handlers(functions) as a new handler.",
   "keywords": [
     "compose",
