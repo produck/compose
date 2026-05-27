@@ -1,12 +1,15 @@
-/** A function that continues the middleware chain. */
-type Next = () => unknown;
+/** A function that continues the middleware chain, optionally replacing the context for downstream handlers. */
+type Next<T = unknown> = (context?: T) => unknown;
 
 /**
  * A middleware handler that receives a context and a `next` callback.
  * @typeParam T - The shape of the context object.
  * @typeParam R - The return type of the handler.
  */
-export type Handler<T = unknown, R = unknown> = (context: T, next: Next) => R;
+export type Handler<T = unknown, R = unknown> = (
+  context: T,
+  next: Next<T>,
+) => R;
 
 /**
  * Composes zero or more handlers into a single middleware function.

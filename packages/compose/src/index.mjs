@@ -19,22 +19,22 @@ export function compose(...handlers) {
       ThrowTypeError('done', 'function');
     }
 
-    return (function link(index) {
+    return (function link(index, context) {
       if (index === length) {
         return done();
       }
 
       let called = false;
 
-      return handlers[index](context, function next() {
+      return handlers[index](context, function next(nextContext = context) {
         if (called) {
           return Ow.Error.Common('A next() called multiple times.');
         }
 
         called = true;
 
-        return link(index + 1);
+        return link(index + 1, nextContext);
       });
-    })(0);
+    })(0, context);
   };
 }

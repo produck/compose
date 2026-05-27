@@ -31,9 +31,9 @@ Start with the quick middleware chain in
 The compose protocol is defined by two contracts:
 
 - **Handler** — `(context: T, next: Next) => R`
-- **Next** — `() => unknown`
+- **Next** — `(context?: T) => unknown`
 
-Each handler receives the shared `context` and a `next` function to pass
+Each handler receives the current `context` and a `next` function to pass
 control downstream. Handlers execute in registration order on the way "down"
 and in reverse order on the way "back up" (the onion / Koa model).
 
@@ -42,17 +42,20 @@ and in reverse order on the way "back up" (the onion / Koa model).
 ```mermaid
 sequenceDiagram
   participant C as caller
-  participant H0 as handler 0
-  participant H1 as handler 1
+  participant W as workflow
+  participant H0 as handler[0]
+  participant H1 as handler[1]
   participant D as done
 
-  C->>H0: workflow(ctx, done)
+  C->>W: workflow(context, done)
+  activate W
+  W->>H0: handler[0](context, next)
   activate H0
   Note over H0: pre
-  H0->>H1: next
+  H0->>H1: next(newContext)
   activate H1
   Note over H1: pre
-  H1->>D: next
+  H1->>D: next()
   activate D
   D-->>H1: return
   deactivate D
@@ -60,8 +63,10 @@ sequenceDiagram
   H1-->>H0: return
   deactivate H1
   Note over H0: post
-  H0-->>C: return
+  H0-->>W: return
   deactivate H0
+  W-->>C: return
+  deactivate W
 ```
 
 ### Rules
@@ -76,17 +81,19 @@ sequenceDiagram
 
 ### The nature of `next`
 
-`next` is a **bare continuation** — its only guaranteed behavior is to invoke
-the next handler in the chain and return its value. Compose itself does not
-define what `next()` should return, whether it should be awaited, or what to
-do with its result. See [next return semantics](#ex-next-semantics).
+`next` is a **bare continuation** — its guaranteed behavior is to invoke the
+next handler in the chain and return its value. Compose itself does not define
+what `next()` should return, whether it should be awaited, or what to do with
+its result. See [next return semantics](#ex-next-semantics).
 
-Each handler decides for itself what `next()` means — whether to await it,
-assert its return value, catch its rejection, or skip calling it altogether.
-Compose does not impose a global contract on `next`'s return semantics. This
-is not a limitation; it is a deliberate property of the design: **the meaning
-of `next` is defined locally, by the handler that calls it, not globally by
-the composer.**
+When called with a `newContext` argument, that value replaces the current
+context for all downstream handlers — see
+[context replacement](#ex-context-replacement). Each handler decides for
+itself what `next()` means — whether to await it, assert its return value,
+catch its rejection, or skip calling it altogether. Compose does not impose a
+global contract on `next`'s return semantics. This is not a limitation; it is
+a deliberate property of the design: **the meaning of `next` is defined
+locally, by the handler that calls it, not globally by the composer.**
 
 ## Protocol adaptation via context
 
@@ -101,8 +108,9 @@ by wrapping multi-argument signatures into a single context object:
 | `(err, data, next)`     | `ctx = { err, data }`     |
 | `(message, meta, next)` | `ctx = { message, meta }` |
 
-The only truly fixed element is `next` itself — a zero-argument continuation
-function. Everything else lives in context and is entirely caller-defined.
+The only truly fixed element is `next` itself — a continuation function that
+may optionally receive a new context to replace the current one for downstream
+handlers. Everything else lives in context and is entirely caller-defined.
 
 See [context adaptation example](#ex-context-adaptation).
 
@@ -133,8 +141,17 @@ type Handler<T, R> = (context: T, next: Next) => R;
 ### `Next`
 
 ```ts
-type Next = () => unknown;
+type Next<T = unknown> = (context?: T) => unknown;
 ```
+
+When called without arguments, the current context is passed through to the
+next handler. When called with a value, that value becomes the context for all
+downstream handlers — see
+[context replacement example](#ex-context-replacement).
+
+> The library does not restrict the type of the replacement value — it is
+> possible to pass a completely different context shape to downstream handlers.
+> This is uncommon in practice but remains a valid use of the protocol.
 
 ## Application scenarios
 
@@ -145,6 +162,7 @@ Use the table below to jump from scenario to the closest runnable example.
 | HTTP middleware pipelines            | Logging, auth, parsing, routing in onion order          | [Quick start](#ex-quick-start)                              |
 | Lifecycle hooks                      | Ordered phases like connect -> migrate -> seed -> ready | [With a done callback](#ex-lifecycle-hooks)                 |
 | Plugin / extension chains            | Wrap core behavior with metrics, cache, validation      | [Branching / forking](#ex-plugin-chain)                     |
+| Context isolation                    | Derive new context per scope without mutating parent    | [Context replacement](#ex-context-replacement)              |
 | Data transformation pipelines        | Mutate shared context across sequential steps           | [Nested composition](#ex-data-transform)                    |
 | Conditional routing                  | Select different downstream paths by runtime state      | [Conditional downstream dispatch](#ex-conditional-dispatch) |
 | Nested composition (context slicing) | Split large flows into focused sub-workflows            | [Nested composition](#ex-nested-composition)                |
@@ -178,8 +196,10 @@ to preserve ordering. See [next return semantics](#ex-next-semantics).
 ### Shared mutable context
 
 `context` is passed by reference to every handler. Accidental mutation in one
-handler can affect downstream or upstream handlers. Defensive copying or
-immutable patterns are recommended for complex workflows. See
+handler can affect downstream or upstream handlers. Use
+[context replacement](#ex-context-replacement) to pass a derived or
+immutable object without mutating the original, or adopt defensive copying /
+immutable patterns for complex workflows. See
 [nested composition](#ex-nested-composition).
 
 ## Examples
@@ -192,6 +212,7 @@ Example index:
 - [Single-call rule](#ex-single-call-rule)
 - [`next()` return semantics](#ex-next-semantics)
 - [Context adaptation](#ex-context-adaptation)
+- [Context replacement](#ex-context-replacement)
 - [Branching / forking](#ex-branching)
 - [Plugin / extension chains (same example)](#ex-plugin-chain)
 - [Conditional downstream dispatch](#ex-conditional-dispatch)
@@ -289,6 +310,28 @@ compose((ctx, next) => {
   console.log(ctx.req.url);
   next();
 })({ req, res });
+```
+
+<a id="ex-context-replacement"></a>
+
+### Context replacement
+
+Pass a new context to `next()` to replace the current context for downstream
+handlers, without mutating the original object.
+
+```js
+const workflow = compose(
+  (ctx, next) => {
+    // Derive a new context instead of mutating the original
+    next({ ...ctx, phase: 'processing' });
+  },
+  (ctx, next) => {
+    console.log(ctx.phase); // 'processing'
+    next();
+  },
+);
+
+workflow({ phase: 'init' });
 ```
 
 <a id="ex-branching"></a>

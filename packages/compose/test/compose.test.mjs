@@ -80,6 +80,26 @@ describe('compose()', function () {
       );
     });
 
+    it('should replace context when passing a new one to next().', function () {
+      compose(
+        (ctx, next) => next({ replaced: true }),
+        (ctx, next) => {
+          assert.deepEqual(ctx, { replaced: true });
+          next();
+        },
+      )({ original: true });
+    });
+
+    it('should keep context when calling next() without arguments.', function () {
+      compose(
+        (ctx, next) => next(),
+        (ctx, next) => {
+          assert.deepEqual(ctx, { original: true });
+          next();
+        },
+      )({ original: true });
+    });
+
     it('should catch if next() throw.', async function () {
       let flag = false;
 
