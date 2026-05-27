@@ -218,6 +218,7 @@ Example index:
 - [Conditional downstream dispatch](#ex-conditional-dispatch)
 - [Nested composition (context slicing)](#ex-nested-composition)
 - [Data transformation pipeline (same example)](#ex-data-transform)
+- [Workflow nesting](#ex-workflow-nesting)
 - [Error boundary](#ex-error-boundary)
 - [TypeScript](#ex-typescript)
 
@@ -450,6 +451,86 @@ placeOrder({
 });
 // -> notifyCtx.log === ['email queued', 'sms queued']
 // -> priceCtx.total === 220
+```
+
+<a id="ex-workflow-nesting"></a>
+
+### Workflow nesting
+
+A composed workflow is itself a valid handler — it matches the
+`(context, next)` signature. This means you can pass a workflow directly as a
+handler to another `compose()` call, creating a nested execution boundary
+without any wrapper function.
+
+```js
+const greet = compose(
+  (ctx, next) => {
+    ctx.log.push('hello');
+    next();
+    ctx.log.push('bye');
+  },
+  (ctx, next) => {
+    ctx.log.push('world');
+    next();
+  },
+);
+
+const main = compose(
+  (ctx, next) => {
+    ctx.log.push('main:pre');
+    next();
+    ctx.log.push('main:post');
+  },
+  greet, // ← composed workflow used directly as a handler
+);
+
+const result = { log: [] };
+main(result);
+// result.log = ['main:pre', 'hello', 'world', 'bye', 'main:post']
+```
+
+Execution flow:
+
+```mermaid
+sequenceDiagram
+  participant C as caller
+  participant WM as main:workflow
+  participant M0 as main:handler[0]
+  participant WG as greet:workflow
+  participant G0 as greet:handler[0]
+  participant G1 as greet:handler[1]
+  participant D as done
+
+  C->>WM: main(context, done)
+  activate WM
+  WM->>M0: handler[0](context, next)
+  activate M0
+  Note over M0: push 'main:pre'
+  M0->>WG: greet(context, mainNext)
+  activate WG
+  WG->>G0: handler[0](context, next)
+  activate G0
+  Note over G0: push 'hello'
+  G0->>G1: next()
+  activate G1
+  Note over G1: push 'world'
+  G1->>D: next()
+  activate D
+  D-->>G1: return
+  deactivate D
+  Note over G1: post
+  G1-->>G0: return
+  deactivate G1
+  Note over G0: push 'bye'
+  G0-->>WG: return
+  deactivate G0
+  WG-->>M0: return
+  deactivate WG
+  Note over M0: push 'main:post'
+  M0-->>WM: return
+  deactivate M0
+  WM-->>C: return
+  deactivate WM
 ```
 
 <a id="ex-error-boundary"></a>
