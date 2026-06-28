@@ -1,7 +1,24 @@
 {
-  "name": "@produck/compose",
-  "version": "0.3.0",
+  "author": "ChaosLee",
+  "bugs": {
+    "url": "https://github.com/produck/compose/issues"
+  },
+  "dependencies": {
+    "@produck/ow": "^0.2.5",
+    "@produck/type-error": "^0.1.7"
+  },
   "description": "Compose a list of handlers(functions) as a new handler.",
+  "engines": {
+    "node": ">=18"
+  },
+  "exports": {
+    "import": "./src/index.mjs",
+    "types": "./src/index.d.ts"
+  },
+  "files": [
+    "src"
+  ],
+  "homepage": "https://github.com/produck/compose#readme",
   "keywords": [
     "compose",
     "middleware",
@@ -9,39 +26,22 @@
     "handler",
     "pipeline"
   ],
-  "homepage": "https://github.com/produck/compose#readme",
-  "bugs": {
-    "url": "https://github.com/produck/compose/issues"
+  "license": "MIT",
+  "main": "./src/index.mjs",
+  "name": "@produck/compose",
+  "publishConfig": {
+    "access": "public"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/produck/compose.git"
   },
-  "license": "MIT",
-  "author": "ChaosLee",
-  "type": "module",
-  "files": [
-    "src"
-  ],
-  "sideEffects": false,
-  "engines": {
-    "node": ">=18"
-  },
-  "types": "./src/index.d.ts",
-  "main": "./src/index.mjs",
-  "exports": {
-    "types": "./src/index.d.ts",
-    "import": "./src/index.mjs"
-  },
-  "publishConfig": {
-    "access": "public"
-  },
   "scripts": {
-    "test": "node test/index.mjs",
-    "produck:coverage": "c8 --reporter=lcov --reporter=html --reporter=text-summary npm test"
+    "produck:coverage": "c8 --reporter=lcov --reporter=html --reporter=text-summary npm test",
+    "test": "node test/index.mjs"
   },
-  "dependencies": {
-    "@produck/ow": "^0.2.5",
-    "@produck/type-error": "^0.1.7"
-  }
+  "sideEffects": false,
+  "type": "module",
+  "types": "./src/index.d.ts",
+  "version": "0.3.0"
 }

@@ -138,3 +138,6 @@ dist
 
 # produck:org-baseline
 publish-assets/
+
+# produck:org-baseline
+!.github/
