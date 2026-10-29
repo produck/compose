@@ -3,11 +3,11 @@
   "bugs": {
     "url": "https://github.com/produck/compose/issues"
   },
-  "dependencies": {
-    "@produck/ow": "^0.2.5",
-    "@produck/type-error": "^0.1.7"
-  },
   "description": "Compose a list of handlers(functions) as a new handler.",
+  "devDependencies": {
+    "@produck/ow": "^0.2.0",
+    "@produck/type-error": "^0.2.0"
+  },
   "engines": {
     "node": ">=18"
   },
@@ -29,6 +29,10 @@
   "license": "MIT",
   "main": "./src/index.mjs",
   "name": "@produck/compose",
+  "peerDependencies": {
+    "@produck/ow": "^0.2.0",
+    "@produck/type-error": "^0.2.0"
+  },
   "publishConfig": {
     "access": "public"
   },
